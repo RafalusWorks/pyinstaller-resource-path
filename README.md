@@ -45,6 +45,10 @@ Returns a `pathlib.Path` pointing to the real file, or `None` if it does not exi
 
 Zero dependencies. Just Python standard library `sys` and `pathlib.Path`.
 
+> [!NOTE]
+> - **DO**: Organize assets inside project subdirectories (e.g., `images/`, `assets/`) and pass relative paths.
+> - **DON'T**: Pass absolute paths (`C:\...` or `/home/...`). They break portability across machines and trigger a `UserWarning`.
+
 ---
 
 ## Quick Start
