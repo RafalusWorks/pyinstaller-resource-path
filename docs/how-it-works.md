@@ -2,7 +2,7 @@
 
 When building desktop applications with Python, relative paths like `"images/logo.png"` work effortlessly during development. The moment you freeze your app into an executable using **PyInstaller**, your app crashes on startup with `FileNotFoundError`.
 
-Here is the exact technical breakdown of why this happens and how `resource_path()` eliminates the problem across all platforms.
+Here is the exact technical breakdown of why this happens and how `resource_path()` eliminates the problem.
 
 ---
 
@@ -53,11 +53,8 @@ Your application EXE sits installed in `C:\MyApp\`, but the user launches it via
 1. **Bundle-First Priority (Prevents Dev Leakage)**:  
    When frozen (`sys.frozen` or `_MEIPASS`), the function checks the internal package **first**. It will never secretly fall back to loose files on your development PC and fool you into believing an incomplete build is functional.
 
-2. **Cross-Platform Compatibility**:  
-   Works out of the box on Windows, macOS (`.app` bundles), and Linux without platform-specific `if/else` checks cluttering your UI code.
-
-3. **Portability Protection**:  
-   Warns immediately via `UserWarning` if someone hardcodes an absolute path (e.g. `D:/...`), preventing developers from breaking cross-platform portability.
+2. **Portability Protection**:  
+   Warns immediately via `UserWarning` if someone hardcodes an absolute path (e.g. `D:/...`), preventing hardcoded drive roots or broken relative layouts.
 
 ---
 

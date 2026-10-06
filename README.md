@@ -5,7 +5,7 @@
 
 A zero-dependency, copy-paste helper function that permanently eliminates `FileNotFoundError` when loading assets (images, icons, fonts, JSON) in PyInstaller-frozen apps.
 
-Works out of the box across **Windows**, **macOS**, and **Linux** in both `--onefile` and `--onedir` builds.
+Works out of the box in both `--onefile` and `--onedir` builds.
 
 Originally developed by [**Rafalus**](https://github.com/RafalusWorks) for the [`ctkforge`](https://github.com/RafalusWorks/ctkforge) ecosystem.
 
@@ -20,6 +20,8 @@ The moment you freeze with PyInstaller, it blows up:
 - **`--onedir`**: Assets sit next to the binary (`sys.executable`), or inside `Contents/Resources/` on macOS app bundles, not wherever the user launched the shortcut from.
 
 Hardcoding relative paths or guessing with `os.getcwd()` guarantees a crash on startup.
+
+> For an in-depth architectural breakdown, see [How It Works](docs/how-it-works.md).
 
 ---
 
