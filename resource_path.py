@@ -43,7 +43,6 @@ def resource_path(relative_path: str | Path, *, strict: bool = False) -> Path | 
         return None
 
     path_obj = Path(relative_path)
-    is_frozen = getattr(sys, "frozen", False) or hasattr(sys, "_MEIPASS")
     checked: list[Path] = []
 
     if path_obj.is_absolute():
@@ -54,28 +53,13 @@ def resource_path(relative_path: str | Path, *, strict: bool = False) -> Path | 
             stacklevel=2,
         )
 
-    # 1. In frozen mode, bundle locations take highest priority to prevent
-    #    accidental file leakage from the developer's local filesystem.
-    if is_frozen and not path_obj.is_absolute():
-        # A. PyInstaller --onefile mode (temporary extraction folder)
-        if hasattr(sys, "_MEIPASS"):
-            candidate = Path(sys._MEIPASS) / path_obj
-            checked.append(candidate)
-            if candidate.exists():
-                return candidate.resolve()
-
-        # B. PyInstaller --onedir mode (executable directory or macOS Resources)
-        exe_dir = Path(sys.executable).resolve().parent
-        candidate = exe_dir / path_obj
+    # 1. In frozen mode, PyInstaller bundle location takes highest priority
+    #    to prevent accidental file leakage from the developer's local filesystem.
+    if hasattr(sys, "_MEIPASS") and not path_obj.is_absolute():
+        candidate = Path(sys._MEIPASS) / path_obj
         checked.append(candidate)
         if candidate.exists():
             return candidate.resolve()
-
-        # macOS bundle structure: Contents/MacOS/ -> Contents/Resources/
-        mac_candidate = exe_dir.parent / "Resources" / path_obj
-        checked.append(mac_candidate)
-        if mac_candidate.exists():
-            return mac_candidate.resolve()
 
     # 2. Direct path (relative to current working directory or absolute)
     checked.append(path_obj)

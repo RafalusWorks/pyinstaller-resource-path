@@ -17,7 +17,7 @@ Relative paths like `"images/icon.png"` work on your machine during dev because 
 
 The moment you freeze with PyInstaller, it blows up:
 - **`--onefile`**: Bundled assets extract into an ephemeral temporary folder at runtime (`sys._MEIPASS`). Your app's working directory is not there.
-- **`--onedir`**: Assets sit next to the binary (`sys.executable`), or inside `Contents/Resources/` on macOS app bundles, not wherever the user launched the shortcut from.
+- **`--onedir`**: Bundled assets are isolated inside the `_internal/` bundle directory (`sys._MEIPASS`), unreachable by standard relative paths.
 
 Hardcoding relative paths or guessing with `os.getcwd()` guarantees a crash on startup.
 
@@ -35,11 +35,10 @@ from resource_path import resource_path
 icon_path = resource_path("images/icon.png")
 ```
 
-It resolves across a 4-tier fallback chain:
-1. **Direct Path**: Checks if the target exists directly on disk or in the current working directory.
-2. **`--onefile` Temporary Folder**: Checks `sys._MEIPASS / relative_path`.
-3. **`--onedir` Application Directory**: Checks next to `sys.executable` (and `Contents/Resources` on macOS).
-4. **Development Entry Point**: Checks next to the running script (`sys.argv[0]`).
+It resolves across a clean 3-tier fallback chain:
+1. **Frozen Bundle (`sys._MEIPASS`)**: Checks the internal package first (`_internal/` for `--onedir`, temp extraction folder for `--onefile`).
+2. **Direct Path**: Checks if the target exists directly on disk or in the current working directory.
+3. **Development Entry Point**: Checks next to the running script (`sys.argv[0]`).
 
 Returns a `pathlib.Path` pointing to the real file, or `None` if it does not exist.
 
