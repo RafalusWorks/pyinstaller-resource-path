@@ -40,7 +40,6 @@ You launch `app.exe` directly inside the build output folder (`dist\app\`) right
 2. **The Assets**: PyInstaller 6+ isolates all bundled data inside `_internal\` at `C:\Projects\app\dist\app\_internal\images\logo.png`.
 3. **The Clash**: Python checks the working directory for `images\logo.png` directly (`C:\Projects\app\dist\app\images\logo.png`). It never looks inside `_internal\`, finds nothing, and crashes immediately.
 
-![Screenshot: Crashed EXE Dialog](images/crash_dialog.png)
 ---
 
 ## 3. How `resource_path()` Solves It
