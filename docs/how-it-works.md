@@ -14,7 +14,7 @@ PyInstaller produces fundamentally different filesystem layouts depending on how
 | :--- | :--- | :--- |
 | **Development** (`python main.py`) | Loose source files on your hard drive. | Sitting in your project folder next to your script (`sys.argv[0]`). |
 | **Single Executable** (`--onefile`) | Compressed into a single `.exe` self-extracting archive. | **Temporary sandbox folder (`sys._MEIPASS`)**: PyInstaller unpacks the runtime and your bundled assets into `AppData\Local\Temp\_MEI...` on launch. |
-| **Folder Distribution** (`--onedir`) | Uncompressed directory of binaries and assets. | **Application directory**: Files sit permanently next to the binary (`sys.executable`), or inside `Contents/Resources/` on macOS. |
+| **Folder Distribution** (`--onedir`) | Uncompressed directory of binaries and assets. | **Application bundle (`sys._MEIPASS`)**: Files sit inside `_internal/` next to the binary (`sys.executable`), or inside `Contents/Resources/` on macOS. |
 
 ---
 
@@ -35,18 +35,25 @@ When a user launches `app.exe` from their Desktop:
 ![Screenshot: Crashed EXE Dialog](images/crash_dialog.png)
 
 ### The `--onedir` Breakdown
-Your application EXE sits installed in `C:\MyApp\`, but the user launches it via a Desktop shortcut:
-1. **The Process**: Runs from the shortcut. The working directory is set to `C:\Users\<User>\Desktop`.
-2. **The Assets**: Sit permanently inside the application folder at `C:\MyApp\images\logo.png`.
-3. **The Clash**: Python checks the working directory (`C:\Users\<User>\Desktop\images\logo.png`) instead of where the `.exe` is installed (`C:\MyApp\`). Python finds nothing and crashes immediately.
+You launch `app.exe` directly inside the build output folder (`dist\app\`) right after compiling:
+1. **The Process**: Runs directly inside the build folder. The working directory is `C:\Projects\app\dist\app`.
+2. **The Assets**: PyInstaller 6+ isolates all bundled data inside `_internal\` at `C:\Projects\app\dist\app\_internal\images\logo.png`.
+3. **The Clash**: Python checks the working directory for `images\logo.png` directly (`C:\Projects\app\dist\app\images\logo.png`). It never looks inside `_internal\`, finds nothing, and crashes immediately.
 
+![Screenshot: Crashed EXE Dialog](images/crash_dialog.png)
 ---
 
 ## 3. How `resource_path()` Solves It
 
 `resource_path()` serves as an automated resolution switchboard:
 
-![Resource Path Architecture Diagram](images/diagram.png)
+```text
+                                 |-- [Frozen: --onefile]  --> sys._MEIPASS / path
+                                 |
+resource_path("images/logo.png") +-- [Frozen: --onedir]   --> sys._MEIPASS / path
+                                 |
+                                 |-- [Dev. Mode]   --> sys.argv[0].parent / path
+```
 
 ### Key Architectural Invariants
 
