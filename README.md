@@ -86,7 +86,6 @@ app.mainloop()
 
 ## Running the Demo
 
-### Option 1: Copy Files to Your Project Folder
 Ensure `demo_ctk.py`, `resource_path.py`, and `images/` are in the same folder:
 
 ```text
@@ -97,22 +96,8 @@ your_project/
     └── smug_developer.png
 ```
 
-Install required libraries:
 ```bash
 pip install customtkinter pillow pyinstaller
-```
-
-Run the demo:
-```bash
-python demo_ctk.py
-```
-
-### Option 2: Clone & Run
-```bash
-git clone https://github.com/RafalusWorks/pyinstaller-resource-path.git
-cd pyinstaller-resource-path
-
-pip install -r requirements.txt
 python demo_ctk.py
 ```
 
@@ -150,23 +135,6 @@ pyinstaller --noconsole --onefile --collect-all customtkinter --add-data "images
 ```bash
 pyinstaller --noconsole --onedir --collect-all customtkinter --add-data "images:images" demo_ctk.py
 ```
-
----
-
-## Project Structure
-
-```text
-pyinstaller-resource-path/
-├── .gitignore
-├── LICENSE
-├── README.md
-├── requirements.txt
-├── resource_path.py      <-- The zero-dependency helper
-├── demo_ctk.py           <-- Minimal CustomTkinter demonstration
-└── images/
-    └── smug_developer.png
-```
-
 ---
 
 ## Author & License
