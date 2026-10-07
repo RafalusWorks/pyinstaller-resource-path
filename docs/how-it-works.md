@@ -14,7 +14,7 @@ PyInstaller produces fundamentally different filesystem layouts depending on how
 | :--- | :--- | :--- |
 | **Development** (`python main.py`) | Loose source files on your hard drive. | Sitting in your project folder next to your script (`sys.argv[0]`). |
 | **Single Executable** (`--onefile`) | Compressed into a single `.exe` self-extracting archive. | **Temporary sandbox folder (`sys._MEIPASS`)**: PyInstaller unpacks the runtime and your bundled assets into `AppData\Local\Temp\_MEI...` on launch. |
-| **Folder Distribution** (`--onedir`) | Uncompressed directory of binaries and assets. | **Application bundle (`sys._MEIPASS`)**: Files sit inside `_internal/` next to the binary (`sys.executable`), or inside `Contents/Resources/` on macOS. |
+| **Folder Distribution** (`--onedir`) | Uncompressed directory of binaries and assets. | **Application bundle (`sys._MEIPASS`)**: Files sit inside `_internal/` next to the binary (`sys.executable`). |
 
 ---
 
@@ -57,7 +57,7 @@ resource_path("images/logo.png") +-- [Frozen: --onedir]   --> sys._MEIPASS / pat
 ### Key Architectural Invariants
 
 1. **Bundle-First Priority (Prevents Dev Leakage)**:  
-   When frozen (`sys.frozen` or `_MEIPASS`), the function checks the internal package **first**. It will never secretly fall back to loose files on your development PC and fool you into believing an incomplete build is functional.
+   When frozen (`sys._MEIPASS`), the function checks the internal package **first**. It will never secretly fall back to loose files on your development PC and fool you into believing an incomplete build is functional.
 
 2. **Portability Protection**:  
    Warns immediately via `UserWarning` if someone hardcodes an absolute path (e.g. `D:/...`), preventing hardcoded drive roots or broken relative layouts.
